@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InterFood Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{
+  font-family:Inter;
+  margin:0;
+  color:#fff;
+  background:#000;
+  overflow-x:hidden;
+}
+
+/* ДИНАМИЧЕСКИЙ ФОН */
+body::before{
+  content:"";
+  position:fixed;
+  width:600px;height:600px;
+  background:radial-gradient(circle, rgba(230,57,70,0.35), transparent 70%);
+  filter:blur(120px);
+  top:-200px;left:-200px;
+  animation:move1 12s infinite alternate ease-in-out;
+  z-index:-1;
+}
+
+@keyframes move1{
+  from{transform:translate(0,0)}
+  to{transform:translate(120px,80px)}
+}
+
+header{
+  text-align:center;
+  padding:25px;
+  font-size:30px;
+  font-weight:700;
+  letter-spacing:3px;
+}
+
+.container{padding:20px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px
+}
+
+.card{
+  background:rgba(255,255,255,0.05);
+  border-radius:20px;
+  padding:12px;
+  cursor:pointer;
+  transition:.4s cubic-bezier(.2,.8,.2,1);
+  backdrop-filter:blur(15px);
+  border:1px solid rgba(255,255,255,0.08);
+  position:relative;
+  overflow:hidden;
+}
+
+.card:hover{
+  transform:translateY(-10px) scale(1.04);
+  box-shadow:0 20px 40px rgba(230,57,70,0.25);
+}
+
+.card img{
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:14px;
+  transition:.4s;
+}
+
+.card:hover img{
+  transform:scale(1.08);
+}
+
+.hidden{display:none}
+
+.back{margin-bottom:15px;cursor:pointer;color:#aaa}
+
+/* АНИМАЦИЯ СТРАНИЦ */
+.page{
+  animation:fade .5s ease;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* КНОПКА */
+.btn{
+  margin-top:15px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:14px;
+  background:#e63946;
+  font-weight:600;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 10px 25px rgba(230,57,70,0.4);
+}
+
+</style>
+</head>
+<body>
+
+<header>InterFood</header>
+
+<div class="container page" id="categories">
+  <div class="grid">
+    <div class="card" onclick="openCategory('sushi')">Суши / Роллы</div>
+    <div class="card" onclick="openCategory('shawarma')">Шаурма / Донер</div>
+    <div class="card" onclick="openCategory('grill')">Гриль / Шашлык</div>
+    <div class="card" onclick="openCategory('bakery')">Выпечка</div>
+    <div class="card" onclick="openCategory('dessert')">Десерты</div>
+    <div class="card" onclick="openCategory('drinks')">Напитки</div>
+  </div>
+</div>
+
+<div class="container hidden page" id="dishes">
+  <div class="back" onclick="goBack()">← Назад</div>
+  <div class="grid" id="dishList"></div>
+</div>
+
+<div class="container hidden page" id="dishPage">
+  <div class="back" onclick="goBackToDishes()">← Назад</div>
+  <div id="dishContent"></div>
+</div>
+
+<script>
+const data = {
+  sushi:[{name:"Филадельфия",price:"350р",weight:"250г",desc:"Лосось",img:"img/филадельфия.JPG"},
+{name: "Калифорния",
+    price: "300р",
+    weight: "220г",
+    desc: "Краб, авокадо, огурец",
+    img: "img/Сеты.JPG"}],
+  shawarma:[{name:"Шаурма",price:"8€",weight:"300г",desc:"Курица",img:"img/shawarma1.jpg"}],
+  grill:[{name:"Шашлык",price:"15€",weight:"400г",desc:"Мясо",img:"img/grill1.jpg"}],
+  bakery:[{name:"Хачапури",price:"7€",weight:"350г",desc:"Сыр",img:"img/bakery1.jpg"}],
+  dessert:[{name:"Чизкейк",price:"6€",weight:"150г",desc:"Десерт",img:"img/dessert1.jpg"}],
+  drinks:[{name:"Кола",price:"2€",weight:"500мл",desc:"Напиток",img:"img/drink1.jpg"}]
+};
+
+let currentCategory=null;
+
+function openCategory(cat){
+  currentCategory=cat;
+  categories.classList.add('hidden');
+  dishes.classList.remove('hidden');
+  dishList.innerHTML='';
+
+  data[cat].forEach((item,i)=>{
+    dishList.innerHTML+=`<div class="card" onclick="openDish(${i})">
+      <img src="${item.img}">
+      <h3>${item.name}</h3>
+      <p>${item.price}</p>
+    </div>`;
+  });
+}
+
+function openDish(i){
+  const item=data[currentCategory][i];
+  dishes.classList.add('hidden');
+  dishPage.classList.remove('hidden');
+
+  dishContent.innerHTML=`
+    <img src="${item.img}" style="width:100%;border-radius:16px;animation:fade .5s">
+    <h2>${item.name}</h2>
+    <p>Цена: ${item.price}</p>
+    <p>Вес: ${item.weight}</p>
+    <p>${item.desc}</p>
+    <button class='btn'>Заказать</button>`;
+}
+
+function goBack(){
+  dishes.classList.add('hidden');
+  categories.classList.remove('hidden');
+}
+
+function goBackToDishes(){
+  dishPage.classList.add('hidden');
+  dishes.classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
